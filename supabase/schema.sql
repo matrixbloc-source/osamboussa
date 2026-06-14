@@ -252,7 +252,33 @@ create trigger on_review_insert
   for each row execute function public.update_vendor_rating();
 
 -- ============================================================
--- 9. RÔLE ADMIN
+-- 9. TRIGGER — Auto-création du profil vendeur à l'inscription
+-- Se déclenche quand auth.users reçoit un nouvel utilisateur.
+-- Les champs shop/city/phone viennent de options.data passés au signup.
+-- ============================================================
+create or replace function public.handle_new_vendor()
+returns trigger language plpgsql security definer set search_path = '' as $$
+begin
+  insert into public.vendors (id, email, shop, city, phone)
+  values (
+    new.id,
+    new.email,
+    coalesce(new.raw_user_meta_data->>'shop', 'Ma boutique'),
+    coalesce(new.raw_user_meta_data->>'city', ''),
+    coalesce(new.raw_user_meta_data->>'phone', '')
+  )
+  on conflict (id) do nothing;
+  return new;
+end;
+$$;
+
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute function public.handle_new_vendor();
+
+-- ============================================================
+-- 10. RÔLE ADMIN
 -- Attribuer via Supabase Dashboard → Auth → Users → Edit user
 -- Champ : user_metadata → { "role": "admin" }
 -- OU via cette requête SQL (remplacer l'email) :

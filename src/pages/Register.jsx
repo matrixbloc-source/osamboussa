@@ -1,13 +1,13 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 
 export default function Register() {
   const { signUp } = useAuth();
-  const navigate = useNavigate();
   const [form, setForm] = useState({ email: '', password: '', confirm: '', shop: '', city: '', phone: '' });
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [sent, setSent] = useState(false);
 
   const set = (field) => (e) => setForm((prev) => ({ ...prev, [field]: e.target.value }));
 
@@ -16,6 +16,10 @@ export default function Register() {
     setError(null);
     if (form.password !== form.confirm) {
       setError('Les mots de passe ne correspondent pas.');
+      return;
+    }
+    if (form.password.length < 6) {
+      setError('Le mot de passe doit contenir au moins 6 caractères.');
       return;
     }
     setLoading(true);
@@ -31,11 +35,37 @@ export default function Register() {
       setError(signUpError.message || "Impossible de créer le compte.");
       return;
     }
-    navigate('/login');
+    setSent(true);
   };
 
+  if (sent) {
+    return (
+      <section style={{ minHeight: '100vh', padding: '120px 24px 60px', background: '#0A0A0A', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ maxWidth: 520, textAlign: 'center' }}>
+          <div style={{ fontSize: 64, marginBottom: 20 }}>📧</div>
+          <h1 className="pf" style={{ fontSize: 'clamp(24px,5vw,32px)', color: '#F5F0E8', marginBottom: 16 }}>
+            Vérifiez votre email
+          </h1>
+          <p style={{ color: '#9A9A8A', lineHeight: 1.8, marginBottom: 8 }}>
+            Un lien de confirmation a été envoyé à
+          </p>
+          <p style={{ color: '#C9A84C', fontWeight: 700, fontSize: 15, marginBottom: 24 }}>
+            {form.email}
+          </p>
+          <p style={{ color: '#6B6B6B', fontSize: 13, lineHeight: 1.8, marginBottom: 32 }}>
+            Cliquez sur le lien dans l'email pour activer votre compte.<br />
+            Vérifiez aussi votre dossier <strong style={{ color: '#9A9A8A' }}>Spam / Courriers indésirables</strong>.
+          </p>
+          <Link to="/login" className="btn-g" style={{ padding: '13px 32px', borderRadius: 10, fontSize: 13, textDecoration: 'none', display: 'inline-block' }}>
+            Aller à la connexion →
+          </Link>
+        </div>
+      </section>
+    );
+  }
+
   const field = (label, key, type = 'text', placeholder = '') => (
-    <label style={{ display: 'grid', gap: 8, fontSize: 13, color: '#C9A84C' }}>
+    <label key={key} style={{ display: 'grid', gap: 8, fontSize: 13, color: '#C9A84C' }}>
       {label}
       <input
         type={type}
@@ -65,11 +95,11 @@ export default function Register() {
           {field('Email', 'email', 'email', 'exemple@domaine.com')}
           {field('Mot de passe', 'password', 'password', '••••••••')}
           {field('Confirmer le mot de passe', 'confirm', 'password', '••••••••')}
-          {error && <div style={{ color: '#FF6B6B', fontSize: 13 }}>{error}</div>}
+          {error && <div style={{ color: '#FF6B6B', fontSize: 13, background: 'rgba(255,107,107,.08)', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(255,107,107,.2)' }}>{error}</div>}
           <button
             type="submit"
             className="btn-g"
-            style={{ padding: '14px 18px', fontSize: 13, display: 'inline-flex', justifyContent: 'center' }}
+            style={{ padding: '14px 18px', fontSize: 13, display: 'inline-flex', justifyContent: 'center', borderRadius: 10 }}
             disabled={loading}
           >
             {loading ? 'Création en cours...' : 'Créer mon compte'}
@@ -77,7 +107,8 @@ export default function Register() {
         </form>
 
         <div style={{ marginTop: 24, color: '#9A9A8A', fontSize: 13 }}>
-          Déjà un compte ? <Link to="/login" style={{ color: '#C9A84C', textDecoration: 'none' }}>Se connecter</Link>
+          Déjà un compte ?{' '}
+          <Link to="/login" style={{ color: '#C9A84C', textDecoration: 'none' }}>Se connecter</Link>
         </div>
       </div>
     </section>

@@ -26,29 +26,13 @@ export async function signInVendor({ email, password }) {
 }
 
 export async function registerVendor({ email, password, shop, city, phone }) {
-  const authResult = await supabase.auth.signUp({ email, password });
-  if (authResult.error) {
-    return { error: authResult.error, data: null };
-  }
-
-  const userId = authResult.data.user?.id;
-  if (userId) {
-    const profileResult = await supabase.from(VENDORS_TABLE).insert([
-      {
-        id: userId,
-        email,
-        shop,
-        city,
-        phone,
-        created_at: new Date().toISOString(),
-      },
-    ]);
-    if (profileResult.error) {
-      return { error: profileResult.error, data: authResult.data };
-    }
-  }
-
-  return { data: authResult.data, error: null };
+  return supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: { shop, city, phone },
+    },
+  });
 }
 
 export async function signOutVendor() {
