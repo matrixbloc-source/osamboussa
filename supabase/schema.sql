@@ -121,10 +121,12 @@ create policy "conversations_update_participant"
 -- 4. TABLE MESSAGES
 -- Messages individuels dans une conversation
 -- Realtime activé sur cette table
+-- Note : conversation_id est un identifiant texte (ex: conv_1, conv_2)
+-- sans FK pour permettre les inserts sans pré-créer la conversation en DB
 -- ============================================================
 create table if not exists public.messages (
   id              uuid primary key default gen_random_uuid(),
-  conversation_id text not null references public.conversations(id) on delete cascade,
+  conversation_id text not null,
   content         text not null,
   sender_type     text not null check (sender_type in ('user', 'seller')),
   sender_id       uuid references auth.users(id) on delete set null,

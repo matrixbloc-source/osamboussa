@@ -104,10 +104,12 @@ export function MessagesProvider({ children }) {
 
     // Persist to Supabase si disponible
     if (IS_REAL_SUPABASE) {
+      const { data: { user } } = await supabase.auth.getUser();
       await supabase.from('messages').insert({
         conversation_id: convId,
         content: text,
         sender_type: 'user',
+        sender_id: user?.id || null,
         created_at: now.toISOString(),
       });
     }
