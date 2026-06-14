@@ -1,12 +1,7 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { supabase, SUPABASE_URL } from '../lib/supabaseClient.js';
+import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import { supabase, IS_REAL_SUPABASE } from '../lib/supabaseClient.js';
 
 const MessagesContext = createContext(null);
-
-// Détecte si Supabase est configuré avec de vraies credentials
-const IS_REAL_SUPABASE = Boolean(
-  SUPABASE_URL && !SUPABASE_URL.includes('placeholder')
-);
 
 const INITIAL_CONVERSATIONS = [
   {
@@ -43,6 +38,10 @@ export function MessagesProvider({ children }) {
     IS_REAL_SUPABASE ? 'connecting' : 'local'
   );
 
+  // Ref pour éviter la stale closure dans le callback Realtime
+  const activeConvIdRef = useRef(null);
+  useEffect(() => { activeConvIdRef.current = activeConvId; }, [activeConvId]);
+
   // Supabase Realtime — actif uniquement si credentials réels
   useEffect(() => {
     if (!IS_REAL_SUPABASE) return;
@@ -67,7 +66,7 @@ export function MessagesProvider({ children }) {
                 ? {
                     ...c,
                     messages: [...c.messages, newMsg],
-                    unread: c.id !== activeConvId ? c.unread + 1 : 0,
+                    unread: c.id !== activeConvIdRef.current ? c.unread + 1 : 0,
                     lastActivity: row.created_at,
                   }
                 : c

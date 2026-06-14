@@ -4,7 +4,17 @@ export const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 export const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 export const SUPABASE_STORAGE_BUCKET = import.meta.env.VITE_SUPABASE_STORAGE_BUCKET || 'vendor-images';
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// true uniquement quand URL et clé anon sont réelles
+export const IS_REAL_SUPABASE = Boolean(
+  SUPABASE_URL && !SUPABASE_URL.includes('placeholder') &&
+  SUPABASE_ANON_KEY && !SUPABASE_ANON_KEY.includes('placeholder') &&
+  SUPABASE_ANON_KEY.startsWith('eyJ')
+);
+
+export const supabase = createClient(
+  SUPABASE_URL || 'https://placeholder.supabase.co',
+  SUPABASE_ANON_KEY || 'placeholder-anon-key'
+);
 
 export const VENDORS_TABLE = 'vendors';
 export const PRODUCTS_TABLE = 'products';
