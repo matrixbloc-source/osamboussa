@@ -37,7 +37,7 @@ const NAV_LINKS = [
   { label: 'Catégories', to: '/vendeurs' },
   { label: 'Devenir vendeur', to: '/devenir-vendeur' },
   { label: 'Espace vendeur', to: '/espace-vendeur' },
-  { label: 'Abonnements', to: '/abonnements' },
+  { label: 'Rejoindre gratuitement', to: '/abonnements' },
 ];
 
 const LEGAL_LINKS = [
@@ -132,7 +132,7 @@ export default function Footer() {
               onMouseLeave={e => e.currentTarget.style.color = '#6B6B6B'}>Confidentialité</Link>
             <Link to="/abonnements" style={{ color: '#6B6B6B', fontSize: 11, textDecoration: 'none', transition: 'color .2s' }}
               onMouseEnter={e => e.currentTarget.style.color = '#C9A84C'}
-              onMouseLeave={e => e.currentTarget.style.color = '#6B6B6B'}>Tarifs</Link>
+              onMouseLeave={e => e.currentTarget.style.color = '#6B6B6B'}>Gratuit</Link>
           </div>
         </div>
       </div>

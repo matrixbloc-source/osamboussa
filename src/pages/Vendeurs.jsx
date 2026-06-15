@@ -2,13 +2,16 @@ import { useState, useMemo, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import SellerCard from '../components/market/SellerCard.jsx';
 import SellerFilters from '../components/market/SellerFilters.jsx';
-import SELLERS from '../data/sellers.js';
 import { useFavorites } from '../context/FavoritesContext.jsx';
+import { useVendors } from '../lib/useVendors.js';
+import useSEO from '../lib/useSEO.js';
 
 export default function Vendeurs() {
   const location = useLocation();
   const navigate = useNavigate();
   const q = new URLSearchParams(location.search);
+
+  const { vendors, loading, error } = useVendors();
 
   const [qtxt, setQtxt] = useState('');
   const [city, setCity] = useState(q.get('city') || '');
@@ -18,7 +21,6 @@ export default function Vendeurs() {
   const [tab, setTab] = useState(q.get('tab') === 'fav' ? 'fav' : 'all');
   const { favorites } = useFavorites();
 
-  // Sync filtres depuis l'URL (navigation externe)
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     setTab(params.get('tab') === 'fav' ? 'fav' : 'all');
@@ -26,35 +28,34 @@ export default function Vendeurs() {
     if (params.get('delivery') === 'true') setOnlyDelivery(true);
   }, [location.search]);
 
-  const cities = Array.from(new Set(SELLERS.map(s => s.city)));
-  const typesList = Array.from(new Set(SELLERS.flatMap(s => s.types)));
-
-  const premiumSellers = useMemo(() =>
-    SELLERS.filter(s => s.subscription === 'premium'),
-    []
+  const cities = useMemo(
+    () => Array.from(new Set(vendors.map(s => s.city).filter(Boolean))),
+    [vendors]
+  );
+  const typesList = useMemo(
+    () => Array.from(new Set(vendors.flatMap(s => s.types || []))),
+    [vendors]
   );
 
   const allFiltered = useMemo(() => {
-    let list = SELLERS;
+    let list = vendors;
     if (tab === 'fav') list = list.filter(s => favorites.includes(s.id));
     if (qtxt) list = list.filter(s =>
       s.shop.toLowerCase().includes(qtxt.toLowerCase()) ||
       s.city.toLowerCase().includes(qtxt.toLowerCase()) ||
-      s.types.some(t => t.toLowerCase().includes(qtxt.toLowerCase()))
+      (s.types || []).some(t => t.toLowerCase().includes(qtxt.toLowerCase()))
     );
     if (city) list = list.filter(s => s.city === city);
     if (onlyDelivery) list = list.filter(s => s.delivery);
-    if (types.length) list = list.filter(s => types.some(t => s.types.includes(t)));
+    if (types.length) list = list.filter(s => types.some(t => (s.types || []).includes(t)));
     if (minRating) list = list.filter(s => s.rating >= minRating);
-    return [...list].sort((a, b) => {
-      const order = { premium: 0, pro: 1, basic: 2 };
-      const diff = (order[a.subscription] ?? 3) - (order[b.subscription] ?? 3);
-      return diff !== 0 ? diff : b.rating - a.rating;
-    });
-  }, [qtxt, city, onlyDelivery, types, minRating, tab, favorites]);
+    return [...list].sort((a, b) => b.rating - a.rating);
+  }, [vendors, qtxt, city, onlyDelivery, types, minRating, tab, favorites]);
 
-  const hasFilters = qtxt || city || onlyDelivery || types.length > 0 || minRating;
-  const showFeatured = tab === 'all' && !hasFilters && premiumSellers.length > 0;
+  useSEO({
+    title: "Vendeurs de samboussas artisanaux — Marketplace O'Samboussa",
+    description: "Trouvez les meilleurs vendeurs de samboussas comoriens artisanaux près de chez vous. Commandez directement sur WhatsApp. Marseille, Paris, Lyon et toute la France.",
+  });
 
   const changeTab = (t) => {
     setTab(t);
@@ -71,7 +72,7 @@ export default function Vendeurs() {
           Vendeurs <span className="gold-text">O'Samboussa</span>
         </h2>
         <p style={{ color: '#9A9A8A', fontSize: 13 }}>
-          {SELLERS.length} vendeur{SELLERS.length > 1 ? 's' : ''} référencés — samboussas comoriens artisanaux
+          {loading ? 'Chargement...' : `${vendors.length} vendeur${vendors.length > 1 ? 's' : ''} référencés — samboussas comoriens artisanaux`}
         </p>
       </div>
 
@@ -93,42 +94,35 @@ export default function Vendeurs() {
         <SellerFilters qtxt={qtxt} setQtxt={setQtxt} city={city} setCity={setCity} onlyDelivery={onlyDelivery} setOnlyDelivery={setOnlyDelivery} cities={cities} typesList={typesList} types={types} setTypes={setTypes} minRating={minRating} setMinRating={setMinRating} />
       </div>
 
-      {/* Section Premium en vedette */}
-      {showFeatured && (
-        <div style={{ marginBottom: 36 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
-            <div className="divg" style={{ flex: 1 }} />
-            <span style={{ color: '#C9A84C', fontSize: 11, letterSpacing: 3, textTransform: 'uppercase', fontWeight: 700, whiteSpace: 'nowrap' }}>👑 En vedette · Premium</span>
-            <div className="divg" style={{ flex: 1 }} />
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(clamp(260px,45vw,380px),1fr))', gap: 16 }}>
-            {premiumSellers.map(s => (
-              <Link key={s.id} to={`/vendeur/${s.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                <SellerCard seller={s} featured />
-              </Link>
-            ))}
-          </div>
-          <div style={{ marginTop: 20, marginBottom: 8 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div className="divg" style={{ flex: 1 }} />
-              <span style={{ color: '#6B6B6B', fontSize: 11, letterSpacing: 2, textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Tous les vendeurs</span>
-              <div className="divg" style={{ flex: 1 }} />
-            </div>
-          </div>
+      {/* Error */}
+      {error && (
+        <div style={{ background: 'rgba(255,107,107,.08)', border: '1px solid rgba(255,107,107,.2)', borderRadius: 10, padding: '12px 16px', color: '#FF6B6B', fontSize: 13, marginBottom: 20 }}>
+          Erreur de chargement : {error}
+        </div>
+      )}
+
+      {/* Loading skeleton */}
+      {loading && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(clamp(160px,42vw,260px),1fr))', gap: 14 }}>
+          {[1, 2, 3, 4, 5, 6].map(i => (
+            <div key={i} style={{ background: '#111', borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(201,168,76,.06)', height: 280, animation: 'pulse 1.5s ease-in-out infinite' }} />
+          ))}
         </div>
       )}
 
       {/* Grid principale */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(clamp(160px,42vw,260px),1fr))', gap: 14 }}>
-        {(showFeatured ? allFiltered.filter(s => s.subscription !== 'premium') : allFiltered).map(s => (
-          <Link key={s.id} to={`/vendeur/${s.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-            <SellerCard seller={s} />
-          </Link>
-        ))}
-      </div>
+      {!loading && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(clamp(160px,42vw,260px),1fr))', gap: 14 }}>
+          {allFiltered.map(s => (
+            <Link key={s.id} to={`/vendeur/${s.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+              <SellerCard seller={s} />
+            </Link>
+          ))}
+        </div>
+      )}
 
       {/* État vide */}
-      {allFiltered.length === 0 && (
+      {!loading && allFiltered.length === 0 && (
         <div style={{ marginTop: 56, textAlign: 'center', color: '#6B6B6B' }}>
           {tab === 'fav' ? (
             <>
@@ -148,21 +142,23 @@ export default function Vendeurs() {
       )}
 
       {/* CTA Devenir vendeur */}
-      <div style={{ marginTop: 56, background: 'linear-gradient(135deg,rgba(201,168,76,.06),rgba(232,213,163,.03))', border: '1px solid rgba(201,168,76,.15)', borderRadius: 20, padding: '32px 24px', textAlign: 'center' }}>
-        <p style={{ color: '#C9A84C', fontSize: 10, letterSpacing: 3, textTransform: 'uppercase', marginBottom: 10 }}>Rejoindre la marketplace</p>
-        <h3 className="pf" style={{ fontSize: 'clamp(20px,4vw,28px)', color: '#F5F0E8', marginBottom: 10 }}>Vous êtes vendeur de samboussas ?</h3>
-        <p style={{ color: '#6B6B6B', fontSize: 13, marginBottom: 20, maxWidth: 440, margin: '0 auto 20px' }}>
-          Rejoignez O'Samboussa et développez votre activité avec notre marketplace premium.
-        </p>
-        <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
-          <Link to="/devenir-vendeur" className="btn-g" style={{ padding: '12px 28px', borderRadius: 10, fontSize: 13, textDecoration: 'none' }}>
-            Devenir vendeur →
-          </Link>
-          <Link to="/abonnements" className="btn-o" style={{ padding: '12px 28px', borderRadius: 10, fontSize: 13, textDecoration: 'none' }}>
-            Voir les tarifs
-          </Link>
+      {!loading && (
+        <div style={{ marginTop: 56, background: 'linear-gradient(135deg,rgba(201,168,76,.06),rgba(232,213,163,.03))', border: '1px solid rgba(201,168,76,.15)', borderRadius: 20, padding: '32px 24px', textAlign: 'center' }}>
+          <p style={{ color: '#C9A84C', fontSize: 10, letterSpacing: 3, textTransform: 'uppercase', marginBottom: 10 }}>Rejoindre la marketplace</p>
+          <h3 className="pf" style={{ fontSize: 'clamp(20px,4vw,28px)', color: '#F5F0E8', marginBottom: 10 }}>Vous êtes vendeur de samboussas ?</h3>
+          <p style={{ color: '#6B6B6B', fontSize: 13, marginBottom: 20, maxWidth: 440, margin: '0 auto 20px' }}>
+            Inscription 100% gratuite · Compte Fondateur à vie · Visible sur Google par ville
+          </p>
+          <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Link to="/devenir-vendeur" className="btn-g" style={{ padding: '12px 28px', borderRadius: 10, fontSize: 13, textDecoration: 'none' }}>
+              🚀 Inscription gratuite →
+            </Link>
+            <Link to="/abonnements" className="btn-o" style={{ padding: '12px 28px', borderRadius: 10, fontSize: 13, textDecoration: 'none' }}>
+              En savoir plus
+            </Link>
+          </div>
         </div>
-      </div>
+      )}
     </section>
   );
 }

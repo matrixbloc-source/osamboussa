@@ -17,12 +17,14 @@ import CGU from "./pages/CGU.jsx";
 import Confidentialite from "./pages/Confidentialite.jsx";
 import Support from "./pages/Support.jsx";
 import Abonnements from "./pages/Abonnements.jsx";
-import Messagerie from "./pages/Messagerie.jsx";
+import VilleSamboussas from "./pages/VilleSamboussas.jsx";
+import ResetPassword from "./pages/ResetPassword.jsx";
+import UpdatePassword from "./pages/UpdatePassword.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import { FavoritesProvider } from "./context/FavoritesContext.jsx";
-import { MessagesProvider } from "./context/MessagesContext.jsx";
 import RequireAuth from "./components/RequireAuth.jsx";
 import RequireAdmin from "./components/RequireAdmin.jsx";
+import { VendorProvider } from "./context/VendorContext.jsx";
 
 const CSS = `
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
@@ -38,6 +40,7 @@ const CSS = `
   .gold-text{background:linear-gradient(135deg,#C9A84C 0%,#E8D5A3 50%,#C9A84C 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
   .gold-shimmer{background:linear-gradient(90deg,#C9A84C,#E8D5A3,#C9A84C);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 3s linear infinite}
   @keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
   @keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
   .btn-g{background:linear-gradient(135deg,#8A6E2F,#C9A84C,#E8D5A3,#C9A84C);background-size:300% 300%;border:none;cursor:pointer;transition:all .3s;font-family:'Inter',sans-serif;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#0A0A0A}
   .btn-g:hover{background-position:right center;transform:translateY(-2px);box-shadow:0 8px 28px rgba(201,168,76,.4)}
@@ -93,9 +96,9 @@ export default function App() {
 
   return (
     <AuthProvider>
+      <VendorProvider>
       <FavoritesProvider>
-        <MessagesProvider>
-          <style dangerouslySetInnerHTML={{ __html: CSS }} />
+        <style dangerouslySetInnerHTML={{ __html: CSS }} />
           <AnnouncementBanner />
           <Navbar cartCount={cartCount} setCartOpen={setCartOpen} />
           <main style={{ paddingTop: 40 }}>
@@ -115,7 +118,9 @@ export default function App() {
               <Route path="/confidentialite" element={<Confidentialite />} />
               <Route path="/support" element={<Support />} />
               <Route path="/abonnements" element={<Abonnements />} />
-              <Route path="/messagerie" element={<Messagerie />} />
+              <Route path="/samoussas/:ville" element={<VilleSamboussas />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/update-password" element={<UpdatePassword />} />
               <Route path="/products" element={<Vendeurs />} />
               <Route path="/commande" element={<Vendeurs />} />
               <Route path="*" element={<Vendeurs />} />
@@ -123,8 +128,9 @@ export default function App() {
           </main>
           <Footer />
           {cartOpen && <CartPanel cart={cart} setCart={setCart} onClose={() => setCartOpen(false)} priceFor={priceFor} IMGS={{}} MAX_QTY={100} />}
-        </MessagesProvider>
       </FavoritesProvider>
+     
+     </VendorProvider>
     </AuthProvider>
   );
 }

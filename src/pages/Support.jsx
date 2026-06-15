@@ -15,7 +15,7 @@ const FAQS = [
       },
       {
         q: 'Comment recevoir les paiements de mes clients ?',
-        a: 'Les clients vous contactent directement via WhatsApp ou la messagerie intégrée. Vous gérez le paiement de manière indépendante (virement, Lydia, espèces, PayPal…). O\'Samboussa est une plateforme de mise en relation, pas un intermédiaire de paiement.',
+        a: 'Les clients vous contactent directement via WhatsApp. Vous gérez le paiement de manière indépendante (virement, Lydia, espèces, PayPal…). O\'Samboussa est une plateforme de mise en relation, pas un intermédiaire de paiement.',
       },
       {
         q: 'Comment modifier son profil vendeur ?',
@@ -28,7 +28,7 @@ const FAQS = [
     items: [
       {
         q: 'Comment contacter un vendeur ?',
-        a: 'Sur la fiche de chaque vendeur, cliquez sur "Contacter sur WhatsApp" pour une réponse rapide, ou utilisez notre messagerie intégrée via le bouton "Envoyer un message". La plupart des vendeurs répondent dans l\'heure.',
+        a: 'Sur la fiche de chaque vendeur, cliquez sur "Contacter sur WhatsApp" pour une réponse rapide. La plupart des vendeurs répondent dans l\'heure.',
       },
       {
         q: 'Comment fonctionne la livraison ?',
