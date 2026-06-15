@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Rating from '../components/market/Rating.jsx';
 import { useFavorites } from '../context/FavoritesContext.jsx';
 import { useVendor } from '../lib/useVendors.js';
 import useSEO from '../lib/useSEO.js';
-import { trackWA } from '../lib/trackEvent.js';
+import { trackWA, trackView } from '../lib/trackEvent.js';
+import JsonLd from '../components/JsonLd.jsx';
 
 const MOCK_REVIEWS = [
   ['Amina K.', 'Samboussas incroyables, croustillants et bien garnis. Livraison rapide !'],
@@ -25,6 +26,8 @@ export default function Vendeur() {
     description: s ? `Commandez vos samboussas comoriens artisanaux chez ${s.shop} à ${s.city}. ${(s.types || []).slice(0, 3).join(', ')}. Contact direct sur WhatsApp.` : '',
     og: s ? { title: `${s.shop} sur O'Samboussa 🥟`, description: `Samboussas artisanaux à ${s.city} · Commandez sur WhatsApp` } : {},
   });
+
+  useEffect(() => { if (s?.id) trackView(s.id); }, [s?.id]);
 
   const handleShare = async () => {
     const url = window.location.href;
@@ -71,6 +74,7 @@ export default function Vendeur() {
 
   return (
     <section style={{ padding: '16px', maxWidth: '1100px', margin: '80px auto' }}>
+      <JsonLd vendor={s} />
 
       {/* Breadcrumb */}
       <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 16, fontSize: 13, color: '#6B6B6B' }}>

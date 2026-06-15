@@ -1,8 +1,10 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import Rating from '../components/market/Rating.jsx';
 import { supabase, IS_REAL_SUPABASE, SUPABASE_STORAGE_BUCKET } from '../lib/supabaseClient.js';
 import { useVendor } from '../lib/useVendors.js';
+import { getLocalWAClicks } from '../lib/trackEvent.js';
 
 function StatCard({ label, value, sub, color = '#C9A84C', icon, live = false }) {
   return (
@@ -55,6 +57,7 @@ export default function EspaceVendeur() {
   const [newProductImgError, setNewProductImgError] = useState(null);
   const [uploadingImg, setUploadingImg] = useState(false);
   const [newType, setNewType] = useState('');
+  const [vendorStats, setVendorStats] = useState({ wa_clicks: 0, page_views: 0 });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [saveError, setSaveError] = useState(null);
@@ -70,6 +73,22 @@ export default function EspaceVendeur() {
       setProducts([...(vendor.products || [])]);
     }
   }, [vendor]);
+
+  // Load analytics stats (wa_clicks, page_views) from vendor_stats table
+  useEffect(() => {
+    if (!user?.id) return;
+    const localClicks = getLocalWAClicks(user.id);
+    setVendorStats(s => ({ ...s, wa_clicks: localClicks }));
+    if (!IS_REAL_SUPABASE) return;
+    supabase
+      .from('vendor_stats')
+      .select('wa_clicks, page_views')
+      .eq('vendor_id', user.id)
+      .single()
+      .then(({ data }) => {
+        if (data) setVendorStats({ wa_clicks: Math.max(data.wa_clicks || 0, localClicks), page_views: data.page_views || 0 });
+      });
+  }, [user?.id]);
 
   useEffect(() => {
     if (activeTab !== 'reviews' || !user?.id) return;
@@ -268,7 +287,9 @@ export default function EspaceVendeur() {
   const stats = useMemo(() => ({
     rating: form?.rating || 0,
     reviews: form?.reviews || 0,
-  }), [form]);
+    waClicks: vendorStats.wa_clicks,
+    pageViews: vendorStats.page_views,
+  }), [form, vendorStats]);
 
   const tabs = [
     { id: 'dashboard', label: '📊 Tableau de bord' },
@@ -342,10 +363,25 @@ export default function EspaceVendeur() {
       {/* ── DASHBOARD ────────────────────────────────────────────────── */}
       {activeTab === 'dashboard' && (
         <div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px,1fr))', gap: 14, marginBottom: 28 }}>
+          {/* Analytics Stats */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px,1fr))', gap: 14, marginBottom: 28 }}>
+            <StatCard icon="📱" label="Clics WhatsApp" value={stats.waClicks} sub="Contacts reçus" color="#4ADE80" live={IS_REAL_SUPABASE} />
+            <StatCard icon="👁" label="Vues du profil" value={stats.pageViews} sub="Visites uniques" color="#A78BFA" live={IS_REAL_SUPABASE} />
             <StatCard icon="⭐" label="Note moyenne" value={stats.rating > 0 ? `${stats.rating}/5` : '—'} sub={`${stats.reviews} avis`} live={IS_REAL_SUPABASE} />
             <StatCard icon="💬" label="Avis reçus" value={stats.reviews} sub="Total" live={IS_REAL_SUPABASE} />
             <StatCard icon="📦" label="Produits actifs" value={products.length} sub="Dans votre catalogue" />
+          </div>
+
+          {/* View public profile CTA */}
+          <div style={{ background: 'rgba(201,168,76,.04)', border: '1px solid rgba(201,168,76,.15)', borderRadius: 12, padding: '14px 18px', marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
+            <div>
+              <p style={{ fontWeight: 700, fontSize: 14, marginBottom: 2 }}>Votre fiche publique</p>
+              <p style={{ color: '#6B6B6B', fontSize: 12 }}>Voyez ce que voient vos clients sur O'Samboussa</p>
+            </div>
+            <Link to={`/vendeur/${user?.id}`}
+              style={{ padding: '10px 18px', borderRadius: 8, background: 'rgba(201,168,76,.12)', border: '1px solid rgba(201,168,76,.4)', color: '#C9A84C', textDecoration: 'none', fontSize: 13, fontWeight: 600, whiteSpace: 'nowrap' }}>
+              Voir mon profil public ↗
+            </Link>
           </div>
 
           <div style={{ background: '#111', border: '1px solid rgba(201,168,76,.08)', borderRadius: 14, padding: 20, marginBottom: 20 }}>

@@ -1,43 +1,38 @@
 import { supabase, IS_REAL_SUPABASE } from './supabaseClient.js';
 
 /*
-  Tracking WhatsApp clicks.
-  Requires this SQL in Supabase (run once):
-
-  CREATE TABLE IF NOT EXISTS public.vendor_stats (
-    vendor_id uuid PRIMARY KEY REFERENCES vendors(id) ON DELETE CASCADE,
-    wa_clicks  integer DEFAULT 0,
-    page_views integer DEFAULT 0,
-    updated_at timestamptz DEFAULT now()
-  );
-  ALTER TABLE vendor_stats ENABLE ROW LEVEL SECURITY;
-  CREATE POLICY "public insert" ON vendor_stats FOR INSERT WITH CHECK (true);
-  CREATE POLICY "public update" ON vendor_stats FOR UPDATE USING (true);
-  CREATE POLICY "public select" ON vendor_stats FOR SELECT USING (true);
-
-  CREATE OR REPLACE FUNCTION public.inc_wa_clicks(vid text)
-  RETURNS void LANGUAGE sql AS $$
-    INSERT INTO vendor_stats (vendor_id, wa_clicks)
-    VALUES (vid::uuid, 1)
-    ON CONFLICT (vendor_id) DO UPDATE
-    SET wa_clicks = vendor_stats.wa_clicks + 1, updated_at = now();
-  $$;
+  Tracking events for vendor analytics.
+  Requires the SQL in supabase/migrations.sql to be run first.
+  All functions fail silently if Supabase is not configured or tables don't exist yet.
 */
 
+function localInc(key, vendorId) {
+  try {
+    const stored = JSON.parse(localStorage.getItem(key) || '{}');
+    stored[vendorId] = (stored[vendorId] || 0) + 1;
+    localStorage.setItem(key, JSON.stringify(stored));
+  } catch { /* ignore */ }
+}
+
+/** Track a WhatsApp button click */
 export function trackWA(vendorId) {
   if (!vendorId) return;
+  localInc('wa_clicks', vendorId);
+  if (!IS_REAL_SUPABASE) return;
+  supabase.rpc('inc_wa_clicks', { vid: vendorId }).then(() => {}).catch(() => {});
+}
 
-  // Local tracking — always works, per device
+/** Track a vendor profile page view */
+export function trackView(vendorId) {
+  if (!vendorId) return;
+  if (!IS_REAL_SUPABASE) return;
+  supabase.rpc('inc_page_views', { vid: vendorId }).then(() => {}).catch(() => {});
+}
+
+/** Read local WA clicks for a vendor (shown in dashboard before Supabase loads) */
+export function getLocalWAClicks(vendorId) {
   try {
     const stored = JSON.parse(localStorage.getItem('wa_clicks') || '{}');
-    stored[vendorId] = (stored[vendorId] || 0) + 1;
-    localStorage.setItem('wa_clicks', JSON.stringify(stored));
-  } catch { /* ignore */ }
-
-  // Remote tracking — requires the SQL above to be run
-  if (!IS_REAL_SUPABASE) return;
-  supabase
-    .rpc('inc_wa_clicks', { vid: vendorId })
-    .then(() => {})
-    .catch(() => {}); // silently fail if SQL not yet run
+    return stored[vendorId] || 0;
+  } catch { return 0; }
 }

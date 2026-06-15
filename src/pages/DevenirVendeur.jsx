@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useVendorStatus } from '../context/VendorContext.jsx';
-import { supabase, IS_REAL_SUPABASE, SUPABASE_STORAGE_BUCKET } from '../lib/supabaseClient.js';
+import { supabase, SUPABASE_STORAGE_BUCKET } from '../lib/supabaseClient.js';
+import { compressImage, formatBytes } from '../lib/useImageCompress.js';
 
 /* ── Inline file picker with preview ─────────────────────────── */
 function FilePicker({ label, required, hint, value, onChange }) {
@@ -31,7 +32,7 @@ function FilePicker({ label, required, hint, value, onChange }) {
         <input type="file" accept="image/*" onChange={handle}
           style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }} />
       </div>
-      {value && <div style={{ color: '#4ADE80', fontSize: 11, marginTop: 4 }}>✓ {value.name}</div>}
+      {value && <div style={{ color: '#4ADE80', fontSize: 11, marginTop: 4 }}>✓ {value.name} — {formatBytes(value.size)}</div>}
       {hint && <div style={{ color: '#6B6B6B', fontSize: 11, marginTop: 3 }}>{hint}</div>}
     </div>
   );
@@ -220,30 +221,32 @@ export default function DevenirVendeur() {
 
       if (!uid) throw new Error('Impossible de récupérer votre identifiant.');
 
-      /* 2 — Upload logo */
+      /* 2 — Upload logo (compressed) */
       let logoUrl = null;
       if (logo) {
+        setProgress('Compression du logo…');
+        const compressed = await compressImage(logo, { maxWidth: 400, maxHeight: 400, quality: 0.85 });
         setProgress('Upload du logo…');
-        const ext = logo.name.split('.').pop().toLowerCase();
-        const path = `${uid}/logo.${ext}`;
+        const path = `${uid}/logo.jpg`;
         const { error: upErr } = await supabase.storage
           .from(SUPABASE_STORAGE_BUCKET)
-          .upload(path, logo, { upsert: true });
+          .upload(path, compressed, { upsert: true, contentType: 'image/jpeg' });
         if (!upErr) {
           const { data: u } = supabase.storage.from(SUPABASE_STORAGE_BUCKET).getPublicUrl(path);
           logoUrl = u?.publicUrl || null;
         }
       }
 
-      /* 3 — Upload photo de couverture */
+      /* 3 — Upload photo de couverture (compressed) */
       let coverUrl = null;
       if (cover) {
+        setProgress('Compression de la couverture…');
+        const compressed = await compressImage(cover, { maxWidth: 1200, maxHeight: 500, quality: 0.82 });
         setProgress('Upload de la couverture…');
-        const ext = cover.name.split('.').pop().toLowerCase();
-        const path = `${uid}/cover.${ext}`;
+        const path = `${uid}/cover.jpg`;
         const { error: upErr } = await supabase.storage
           .from(SUPABASE_STORAGE_BUCKET)
-          .upload(path, cover, { upsert: true });
+          .upload(path, compressed, { upsert: true, contentType: 'image/jpeg' });
         if (!upErr) {
           const { data: u } = supabase.storage.from(SUPABASE_STORAGE_BUCKET).getPublicUrl(path);
           coverUrl = u?.publicUrl || null;
@@ -471,12 +474,6 @@ export default function DevenirVendeur() {
 
       </form>
 
-      {/* Info box */}
-      {!IS_REAL_SUPABASE && (
-        <div style={{ marginTop: 16, background: 'rgba(251,191,36,.05)', border: '1px solid rgba(251,191,36,.2)', borderRadius: 10, padding: '12px 16px', color: '#FBBF24', fontSize: 12 }}>
-          ⚠ Mode démonstration — configurez VITE_SUPABASE_URL et VITE_SUPABASE_ANON_KEY pour activer l'enregistrement réel.
-        </div>
-      )}
     </section>
   );
 }
