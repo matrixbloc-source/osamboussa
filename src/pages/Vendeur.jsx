@@ -23,7 +23,7 @@ export default function Vendeur() {
 
   useSEO({
     title: s ? `${s.shop} — Samboussas à ${s.city} | O'Samboussa` : "O'Samboussa",
-    description: s ? `Commandez vos samboussas comoriens artisanaux chez ${s.shop} à ${s.city}. ${(s.types || []).slice(0, 3).join(', ')}. Contact direct sur WhatsApp.` : '',
+    description: s ? `Commandez vos spécialités artisanales chez ${s.shop} à ${s.city}. ${(s.types || []).slice(0, 3).join(', ')}. Contact direct sur WhatsApp.` : '',
     og: s ? { title: `${s.shop} sur O'Samboussa 🥟`, description: `Samboussas artisanaux à ${s.city} · Commandez sur WhatsApp` } : {},
   });
 

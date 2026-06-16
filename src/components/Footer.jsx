@@ -37,7 +37,7 @@ const NAV_LINKS = [
   { label: 'Catégories', to: '/vendeurs' },
   { label: 'Devenir vendeur', to: '/devenir-vendeur' },
   { label: 'Espace vendeur', to: '/espace-vendeur' },
-  { label: 'Rejoindre gratuitement', to: '/abonnements' },
+  { label: '🎁 Offre Fondateur', to: '/abonnements' },
 ];
 
 const LEGAL_LINKS = [
@@ -71,9 +71,12 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <span className="pf gold-shimmer" style={{ fontSize: 20, fontWeight: 700, letterSpacing: 2, display: 'block', marginBottom: 12 }}>O'SAMBOUSSA</span>
-            <p style={{ color: '#6B6B6B', fontSize: 12, lineHeight: 1.8, marginBottom: 20 }}>
-              La marketplace des samboussas<br />comoriens artisanaux.<br />
-              Le vrai goût des Comores 🇰🇲
+            <p style={{ color: '#6B6B6B', fontSize: 12, lineHeight: 1.8, marginBottom: 8 }}>
+              Marketplace culinaire artisanale.<br />
+              Retrouvez les saveurs africaines, asiatiques<br />et de l'océan Indien partout en France.
+            </p>
+            <p style={{ color: 'rgba(201,168,76,.65)', fontSize: 11, letterSpacing: 1.5, marginBottom: 20 }}>
+              🌍 Afrique · Asie · Océan Indien
             </p>
             <div style={{ display: 'flex', gap: 8 }}>
               {SOCIALS.map(({ Icon, href, label, hoverColor }) => (

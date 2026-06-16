@@ -19,7 +19,7 @@ export default function CGU() {
         <div className="divg" style={{ marginBottom: 40 }} />
 
         {section('1. Objet', <>
-          <p>Les présentes conditions générales d'utilisation (CGU) régissent l'accès et l'utilisation de la plateforme O'SAMBOUSSA, marketplace dédiée aux vendeurs de samboussas et spécialités comoriennes artisanales.</p>
+          <p>Les présentes conditions générales d'utilisation (CGU) régissent l'accès et l'utilisation de la plateforme O'SAMBOUSSA, marketplace culinaire artisanale dédiée aux vendeurs de spécialités africaines, asiatiques et de l'océan Indien.</p>
         </>)}
 
         {section('2. Accès à la plateforme', <>

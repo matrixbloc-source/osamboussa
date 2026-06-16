@@ -42,7 +42,7 @@ export default function Navbar({ cartCount, setCartOpen }) {
 
   const baseLinks = [
     { label: 'Vendeurs', to: '/vendeurs' },
-    { label: 'Rejoindre gratuitement', to: '/abonnements' },
+    { label: '🎁 Offre Fondateur', to: '/abonnements' },
   ];
 
   return (
@@ -157,7 +157,7 @@ export default function Navbar({ cartCount, setCartOpen }) {
           {[
             { label: 'Vendeurs', to: '/vendeurs' },
             ...(!isVendor && !isPendingVendor ? [{ label: 'Devenir vendeur', to: '/devenir-vendeur' }] : []),
-            { label: 'Rejoindre gratuitement', to: '/abonnements' },
+            { label: '🎁 Offre Fondateur', to: '/abonnements' },
             { label: 'Contact', to: '/contact' },
             { label: 'Support', to: '/support' },
           ].map(link => (

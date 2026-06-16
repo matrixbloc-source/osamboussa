@@ -1,20 +1,68 @@
 import { Link } from 'react-router-dom';
+import { useFounderCount } from '../lib/useFounderCount.js';
 
 export default function Abonnements() {
+  const { remaining, isFull, loading, limit, pct } = useFounderCount();
+
   return (
     <section style={{ minHeight: '100vh', padding: '120px 24px 80px', background: '#0A0A0A' }}>
       <div style={{ maxWidth: 720, margin: '0 auto' }}>
 
-        <div style={{ textAlign: 'center', marginBottom: 56 }}>
+        <div style={{ textAlign: 'center', marginBottom: 40 }}>
           <p className="lbl" style={{ marginBottom: 14 }}>Phase de lancement</p>
           <h1 className="pf" style={{ fontSize: 'clamp(30px,5vw,52px)', color: '#F5F0E8', lineHeight: 1.15, marginBottom: 16 }}>
-            Rejoignez O'Samboussa<br /><span className="gold-text">gratuitement</span>
+            🎁 <span className="gold-text">Offre Fondateur</span>
           </h1>
           <div className="divg" style={{ maxWidth: 220, margin: '0 auto 20px' }} />
           <p style={{ color: '#6B6B6B', fontSize: 15, lineHeight: 1.8, maxWidth: 520, margin: '0 auto' }}>
-            Pendant la phase de lancement, l'inscription est entièrement gratuite.<br />
-            Les premiers vendeurs rejoignant la plateforme obtiennent un{' '}
+            Les {limit} premiers vendeurs rejoignant O'Samboussa obtiennent un{' '}
             <strong style={{ color: '#C9A84C' }}>Compte Fondateur gratuit à vie</strong>.
+          </p>
+        </div>
+
+        {/* Dynamic founder counter */}
+        <div style={{
+          background: 'linear-gradient(135deg,rgba(201,168,76,.07),rgba(201,168,76,.03))',
+          border: '1px solid rgba(201,168,76,.28)',
+          borderRadius: 20, padding: '28px 32px', marginBottom: 32, textAlign: 'center',
+          animation: 'founder-pulse 3s ease-in-out infinite',
+        }}>
+          <p style={{ fontSize: 11, letterSpacing: 2.5, textTransform: 'uppercase', color: '#C9A84C', marginBottom: 16 }}>
+            Places fondateurs
+          </p>
+
+          {loading ? (
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, justifyContent: 'center', marginBottom: 16 }}>
+              <span style={{ fontSize: 48, fontWeight: 700, color: 'rgba(201,168,76,.3)', fontFamily: "'Playfair Display',serif" }}>—</span>
+              <span style={{ fontSize: 20, color: '#3A3A3A' }}>/ {limit}</span>
+            </div>
+          ) : (
+            <>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, justifyContent: 'center', marginBottom: 4 }}>
+                <span style={{ fontSize: 56, fontWeight: 700, color: isFull ? '#EF4444' : '#C9A84C', fontFamily: "'Playfair Display',serif", lineHeight: 1 }}>
+                  {isFull ? '0' : remaining}
+                </span>
+                <span style={{ fontSize: 20, color: '#5A5A5A' }}>/ {limit}</span>
+              </div>
+              <p style={{ color: '#6B6B6B', fontSize: 13, marginBottom: 16 }}>
+                {isFull
+                  ? 'Toutes les places fondateurs sont prises.'
+                  : `place${remaining > 1 ? 's' : ''} gratuite${remaining > 1 ? 's' : ''} restante${remaining > 1 ? 's' : ''}`}
+              </p>
+            </>
+          )}
+
+          {/* Progress bar */}
+          <div style={{ background: 'rgba(255,255,255,.05)', borderRadius: 100, height: 8, overflow: 'hidden', marginBottom: 12, maxWidth: 340, margin: '0 auto 12px' }}>
+            <div style={{
+              height: '100%', borderRadius: 100,
+              background: isFull ? '#EF4444' : 'linear-gradient(90deg,#8A6E2F,#C9A84C)',
+              width: loading ? '0%' : `${pct}%`,
+              transition: 'width 1.2s ease',
+            }} />
+          </div>
+          <p style={{ fontSize: 11, color: '#3A3A3A', letterSpacing: .5 }}>
+            {loading ? '' : `${pct}% des places utilisées`}
           </p>
         </div>
 
@@ -51,11 +99,27 @@ export default function Abonnements() {
             ))}
           </ul>
 
-          <Link to="/devenir-vendeur" className="btn-g"
-            style={{ padding: '16px 48px', borderRadius: 12, fontSize: 14, textDecoration: 'none', display: 'inline-block' }}>
-            Rejoindre gratuitement →
-          </Link>
-          <p style={{ color: '#6B6B6B', fontSize: 12, marginTop: 16 }}>Sans carte bancaire · Sans engagement</p>
+          {isFull ? (
+            <>
+              <div style={{ background: 'rgba(255,100,100,.06)', border: '1px solid rgba(255,100,100,.18)', borderRadius: 12, padding: '12px 20px', marginBottom: 16 }}>
+                <p style={{ color: 'rgba(255,160,160,.8)', fontSize: 13 }}>
+                  Les 50 places fondateurs sont épuisées. Des tarifs réguliers seront annoncés prochainement.
+                </p>
+              </div>
+              <Link to="/contact" className="btn-o"
+                style={{ padding: '14px 36px', borderRadius: 12, fontSize: 13, textDecoration: 'none', display: 'inline-block' }}>
+                Rejoindre la liste d'attente →
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link to="/devenir-vendeur" className="btn-g"
+                style={{ padding: '16px 48px', borderRadius: 12, fontSize: 14, textDecoration: 'none', display: 'inline-block' }}>
+                🎁 Rejoindre l'Offre Fondateur →
+              </Link>
+              <p style={{ color: '#6B6B6B', fontSize: 12, marginTop: 16 }}>Sans carte bancaire · Sans engagement · {remaining} place{remaining !== 1 ? 's' : ''} restante{remaining !== 1 ? 's' : ''}</p>
+            </>
+          )}
         </div>
 
         {/* FAQ */}
@@ -67,7 +131,7 @@ export default function Abonnements() {
             {[
               {
                 q: 'Jusqu\'à quand est-ce gratuit ?',
-                r: 'Pendant toute la phase de lancement. Les Comptes Fondateurs garderont leur accès gratuit à vie, même après l\'éventuelle introduction de fonctionnalités payantes.',
+                r: `Pendant toute la phase de lancement pour les ${limit} premiers vendeurs. Les Comptes Fondateurs garderont leur accès gratuit à vie, même après l'introduction de fonctionnalités payantes.`,
               },
               {
                 q: 'Faut-il une carte bancaire ?',

@@ -38,11 +38,11 @@ export default function VilleSamboussas() {
   );
 
   useSEO({
-    title: `Samboussas à ${cityName} — Vendeurs artisanaux comoriens | O'Samboussa`,
-    description: `Trouvez les meilleurs vendeurs de samboussas comoriens artisanaux à ${cityName}. Commande directe sur WhatsApp, livraison à domicile ou retrait sur place.`,
+    title: `Spécialités artisanales à ${cityName} — Samboussas & saveurs du monde | O'Samboussa`,
+    description: `Trouvez les meilleurs vendeurs de spécialités artisanales africaines, asiatiques et de l'océan Indien à ${cityName}. Commande directe sur WhatsApp, livraison à domicile ou retrait sur place.`,
     og: {
-      title: `Samboussas à ${cityName} — O'Samboussa`,
-      description: `${cityVendors.length > 0 ? cityVendors.length + ' vendeur' + (cityVendors.length > 1 ? 's' : '') + ' de samboussas artisanaux à ' + cityName : 'Découvrez les samboussas comoriens artisanaux à ' + cityName}.`,
+      title: `Spécialités artisanales à ${cityName} — O'Samboussa`,
+      description: `${cityVendors.length > 0 ? cityVendors.length + ' vendeur' + (cityVendors.length > 1 ? 's' : '') + ' de spécialités artisanales à ' + cityName : 'Découvrez les spécialités artisanales à ' + cityName}.`,
     },
   });
 
@@ -67,7 +67,7 @@ export default function VilleSamboussas() {
         </h1>
         <p style={{ color: '#9A9A8A', fontSize: 14, lineHeight: 1.7, maxWidth: 600 }}>
           {cityVendors.length > 0
-            ? `${cityVendors.length} vendeur${cityVendors.length > 1 ? 's' : ''} de samboussas comoriens artisanaux à ${cityName}. Contactez-les directement sur WhatsApp pour commander.`
+            ? `${cityVendors.length} vendeur${cityVendors.length > 1 ? 's' : ''} de spécialités artisanales à ${cityName}. Contactez-les directement sur WhatsApp pour commander.`
             : `Nous cherchons des vendeurs de samboussas artisanaux à ${cityName}. Inscription gratuite à vie.`
           }
         </p>
@@ -115,7 +115,7 @@ export default function VilleSamboussas() {
         <div style={{ background: 'linear-gradient(135deg,rgba(201,168,76,.06),rgba(232,213,163,.03))', border: '1px solid rgba(201,168,76,.15)', borderRadius: 20, padding: '32px 24px', textAlign: 'center', marginBottom: 32 }}>
           <div style={{ fontSize: 40, marginBottom: 12 }}>🚀</div>
           <h3 className="pf" style={{ fontSize: 'clamp(18px,4vw,24px)', color: '#F5F0E8', marginBottom: 10 }}>
-            Vous vendez des samboussas à {cityName} ?
+            Vous proposez des spécialités artisanales à {cityName} ?
           </h3>
           <p style={{ color: '#6B6B6B', fontSize: 13, marginBottom: 20 }}>
             Rejoignez O'Samboussa gratuitement · Compte Fondateur à vie · Visible sur Google
@@ -147,12 +147,12 @@ export default function VilleSamboussas() {
       {/* SEO text block */}
       <div style={{ color: '#3A3A3A', fontSize: 13, lineHeight: 1.9, borderTop: '1px solid rgba(255,255,255,.04)', paddingTop: 24 }}>
         <h2 style={{ color: '#5A5A5A', fontSize: 14, fontWeight: 600, marginBottom: 8 }}>
-          Trouver des samboussas comoriens artisanaux à {cityName}
+          Trouver des spécialités artisanales à {cityName}
         </h2>
         <p>
-          O'Samboussa est la première marketplace dédiée aux samboussas comoriens artisanaux en France.
-          Retrouvez tous les vendeurs de samboussas à {cityName} : commandez directement sur WhatsApp,
-          choisissez votre garniture (traditionnel, fromage, poulet, bœuf, thon, légumes…)
+          O'Samboussa est la marketplace culinaire artisanale des saveurs africaines, asiatiques et de l'océan Indien en France.
+          Retrouvez tous les vendeurs de spécialités artisanales à {cityName} : commandez directement sur WhatsApp,
+          choisissez votre spécialité (samboussas, nems, caris, rougails, beignets…)
           et profitez d'une livraison à domicile ou d'un retrait sur place selon les vendeurs.
         </p>
       </div>

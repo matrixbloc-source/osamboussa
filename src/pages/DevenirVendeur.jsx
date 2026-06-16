@@ -306,7 +306,7 @@ export default function DevenirVendeur() {
         </div>
 
         <h2 className="pf" style={{ fontSize: 'clamp(24px,5vw,32px)', color: '#E8D5A3', marginBottom: 6 }}>
-          Vendez vos samboussas sur O'Samboussa
+          Vendez vos spécialités artisanales sur O'Samboussa
         </h2>
         <p style={{ color: '#9A9A8A', fontSize: 13, marginBottom: 18 }}>
           Inscription 100% gratuite · Sans carte bancaire · Les champs <span style={{ color: '#C9A84C' }}>*</span> sont obligatoires.

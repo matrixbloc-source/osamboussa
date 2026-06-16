@@ -4,6 +4,7 @@ import SellerCard from '../components/market/SellerCard.jsx';
 import SellerFilters from '../components/market/SellerFilters.jsx';
 import { useFavorites } from '../context/FavoritesContext.jsx';
 import { useVendors } from '../lib/useVendors.js';
+import { useFounderCount } from '../lib/useFounderCount.js';
 import useSEO from '../lib/useSEO.js';
 
 // ─── Données marketing ────────────────────────────────────────────────────────
@@ -40,24 +41,34 @@ const REGIONS = [
 
 const WHY_ITEMS = [
   {
-    icon: '🤲',
-    title: 'Artisanal & fait maison',
-    desc: "Chaque produit est préparé à la main par un passionné — jamais industriel, jamais en usine.",
-  },
-  {
-    icon: '📍',
-    title: 'Vendeurs près de chez vous',
-    desc: "Des artisans dans votre ville ou région. Retrouvez la saveur de vos voyages à deux pas.",
-  },
-  {
-    icon: '💬',
-    title: 'Contact direct WhatsApp',
-    desc: "Commandez sans intermédiaire, sans frais cachés. Un message suffit pour tout organiser.",
-  },
-  {
     icon: '🌍',
-    title: 'Découverte culturelle',
-    desc: "Explorez des recettes transmises de génération en génération, venues d'Afrique, d'Asie et des îles.",
+    title: 'Saveurs du monde',
+    desc: "Découvrez des recettes venues d'Afrique, d'Asie et de l'océan Indien — transmises de génération en génération.",
+  },
+  {
+    icon: '👨‍🍳',
+    title: 'Artisans passionnés',
+    desc: "Chaque produit est préparé à la main par un artisan passionné — jamais industriel, jamais en usine.",
+  },
+  {
+    icon: '📱',
+    title: 'Contact WhatsApp direct',
+    desc: "Commandez directement par WhatsApp, sans intermédiaire ni frais cachés. Un message suffit.",
+  },
+  {
+    icon: '🚚',
+    title: 'Livraison partout en France',
+    desc: "Votre artisan livre à domicile ou propose le retrait sur place — où que vous soyez en France.",
+  },
+  {
+    icon: '⭐',
+    title: 'Produits authentiques',
+    desc: "Recettes originales, ingrédients sélectionnés, savoir-faire transmis. La vraie cuisine du monde.",
+  },
+  {
+    icon: '🔒',
+    title: 'Vendeurs vérifiés',
+    desc: "Chaque vendeur est examiné et validé par notre équipe avant publication. Commandez en confiance.",
   },
 ];
 
@@ -85,6 +96,19 @@ function HomeHero({ onFind }) {
       <div aria-hidden style={{ position:'absolute', right:'4%', top:'18%', fontSize:'clamp(70px,11vw,130px)', opacity:.04, transform:'rotate(18deg)', pointerEvents:'none', userSelect:'none', lineHeight:1 }}>🌍</div>
       <div aria-hidden style={{ position:'absolute', right:'22%', bottom:'12%', fontSize:'clamp(50px,8vw,100px)', opacity:.03, transform:'rotate(-14deg)', pointerEvents:'none', userSelect:'none' }}>🌏</div>
       <div aria-hidden style={{ position:'absolute', left:'1%', bottom:'25%', fontSize:'clamp(36px,6vw,80px)', opacity:.025, transform:'rotate(10deg)', pointerEvents:'none', userSelect:'none' }}>🏝️</div>
+
+      {/* Particules dorées */}
+      {[
+        { s:2, l:'12%', t:'22%', d:0 },
+        { s:3, l:'35%', t:'60%', d:.6 },
+        { s:2, l:'58%', t:'18%', d:1.1 },
+        { s:2, l:'72%', t:'72%', d:.3 },
+        { s:3, l:'84%', t:'35%', d:.9 },
+        { s:2, l:'25%', t:'80%', d:1.5 },
+        { s:2, l:'48%', t:'44%', d:.5 },
+      ].map((p, i) => (
+        <div aria-hidden key={i} style={{ position:'absolute', width:p.s, height:p.s, borderRadius:'50%', background:'#C9A84C', animation:`twinkle ${2.8+i*.55}s ease-in-out infinite`, animationDelay:`${p.d}s`, left:p.l, top:p.t, pointerEvents:'none' }} />
+      ))}
 
       {/* Contenu */}
       <div style={{
@@ -340,6 +364,8 @@ function CitiesStrip({ cities, activeCity, onCity, onFind }) {
 // ─── CTA Devenir vendeur ──────────────────────────────────────────────────────
 
 function VendorCTA() {
+  const { remaining, isFull, loading, limit, pct } = useFounderCount();
+
   return (
     <div style={{
       marginTop: 'clamp(48px,8vw,80px)',
@@ -358,9 +384,29 @@ function VendorCTA() {
         <h3 className="pf" style={{ fontSize:'clamp(22px,4vw,36px)', color:'#F5F0E8', fontWeight:700, marginBottom:16, lineHeight:1.15 }}>
           Rejoignez la marketplace<br />des artisans du monde
         </h3>
-        <p style={{ color:'#6B6B6B', fontSize:'clamp(13px,1.4vw,15px)', lineHeight:1.7, maxWidth:480, margin:'0 auto 32px' }}>
+        <p style={{ color:'#6B6B6B', fontSize:'clamp(13px,1.4vw,15px)', lineHeight:1.7, maxWidth:480, margin:'0 auto 24px' }}>
           Inscription 100% gratuite · Compte Fondateur à vie · Visible sur Google par ville et par spécialité.
         </p>
+
+        {/* Founder counter */}
+        {!loading && !isFull && remaining !== null && (
+          <div style={{ display:'inline-flex', flexDirection:'column', alignItems:'center', gap:8, background:'rgba(201,168,76,.06)', border:'1px solid rgba(201,168,76,.22)', borderRadius:16, padding:'12px 24px', marginBottom:24, animation:'founder-pulse 2.5s ease-in-out infinite' }}>
+            <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+              <span style={{ width:7, height:7, borderRadius:'50%', background:'#4ADE80', animation:'pulse 2s ease-in-out infinite', display:'inline-block', flexShrink:0 }} />
+              <span style={{ fontSize:12, color:'#C9A84C', fontWeight:700, letterSpacing:.8 }}>
+                🎁 {remaining} place{remaining > 1 ? 's' : ''} restante{remaining > 1 ? 's' : ''} sur {limit} — Offre Fondateur gratuite
+              </span>
+            </div>
+            <div style={{ width:200, height:4, background:'rgba(255,255,255,.06)', borderRadius:100, overflow:'hidden' }}>
+              <div style={{ height:'100%', borderRadius:100, background:'linear-gradient(90deg,#8A6E2F,#C9A84C)', width:`${pct}%`, transition:'width 1s ease' }} />
+            </div>
+          </div>
+        )}
+        {!loading && isFull && (
+          <div style={{ display:'inline-flex', alignItems:'center', gap:8, background:'rgba(255,100,100,.06)', border:'1px solid rgba(255,100,100,.18)', borderRadius:100, padding:'8px 20px', marginBottom:24 }}>
+            <span style={{ fontSize:12, color:'rgba(255,160,160,.7)', letterSpacing:.5 }}>Places fondateurs épuisées · tarifs réguliers bientôt</span>
+          </div>
+        )}
 
         <div className="ctas-row" style={{ display:'flex', gap:12, justifyContent:'center', flexWrap:'wrap', marginBottom:28 }}>
           <Link
@@ -368,14 +414,14 @@ function VendorCTA() {
             className="btn-g"
             style={{ padding:'clamp(13px,2vw,16px) clamp(22px,3vw,36px)', borderRadius:12, fontSize:'clamp(13px,1.4vw,14px)', textDecoration:'none' }}
           >
-            Créer ma boutique gratuitement →
+            {isFull ? 'Rejoindre la liste d\'attente →' : '🎁 Rejoindre l\'Offre Fondateur →'}
           </Link>
           <Link
             to="/abonnements"
             className="btn-o"
             style={{ padding:'clamp(13px,2vw,16px) clamp(22px,3vw,36px)', borderRadius:12, fontSize:'clamp(13px,1.4vw,14px)', textDecoration:'none', display:'inline-block' }}
           >
-            Voir les abonnements
+            En savoir plus
           </Link>
         </div>
 

@@ -32,9 +32,10 @@ const CSS = `
   html{scroll-behavior:smooth;overflow-x:hidden;width:100%}
   body{background:#0A0A0A;color:#F5F0E8;font-family:'Inter',sans-serif;overflow-x:hidden;width:100%}
   #root{overflow-x:hidden;width:100%}
-  ::-webkit-scrollbar{width:5px}
-  ::-webkit-scrollbar-track{background:#0A0A0A}
-  ::-webkit-scrollbar-thumb{background:#8A6E2F;border-radius:3px}
+  ::-webkit-scrollbar{width:14px}
+  ::-webkit-scrollbar-track{background:#0A0A0A;border-left:1px solid rgba(201,168,76,.04)}
+  ::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#8A6E2F 0%,#C9A84C 50%,#8A6E2F 100%);border-radius:20px;border:3px solid #0A0A0A}
+  ::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,#C9A84C,#E8D5A3,#C9A84C);box-shadow:0 0 16px rgba(201,168,76,.4)}
   .pf{font-family:'Playfair Display',serif}
   @keyframes fadeIn{from{opacity:0}to{opacity:1}}
   @keyframes slideLeft{from{opacity:0;transform:translateX(100%)}to{opacity:1;transform:translateX(0)}}
@@ -42,6 +43,9 @@ const CSS = `
   .gold-shimmer{background:linear-gradient(90deg,#C9A84C,#E8D5A3,#C9A84C);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 3s linear infinite}
   @keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  @keyframes twinkle{0%,100%{opacity:.04;transform:scale(1)}50%{opacity:.22;transform:scale(1.8)}}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+  @keyframes founder-pulse{0%,100%{box-shadow:0 0 0 0 rgba(201,168,76,.45)}70%{box-shadow:0 0 0 10px rgba(201,168,76,0)}}
   @keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
   .btn-g{background:linear-gradient(135deg,#8A6E2F,#C9A84C,#E8D5A3,#C9A84C);background-size:300% 300%;border:none;cursor:pointer;transition:all .3s;font-family:'Inter',sans-serif;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#0A0A0A}
   .btn-g:hover{background-position:right center;transform:translateY(-2px);box-shadow:0 8px 28px rgba(201,168,76,.4)}

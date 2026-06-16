@@ -10,13 +10,13 @@ export default function JsonLd({ vendor }) {
     '@type': 'FoodEstablishment',
     name: vendor.shop,
     description: vendor.description
-      || `Samboussas comoriens artisanaux à ${vendor.city}. Commandez sur WhatsApp.`,
+      || `Spécialités artisanales africaines, asiatiques et de l'océan Indien à ${vendor.city}. Commandez sur WhatsApp.`,
     address: {
       '@type': 'PostalAddress',
       addressLocality: vendor.city,
       addressCountry: 'FR',
     },
-    servesCuisine: ['Comorian', 'African'],
+    servesCuisine: ['African', 'Asian', 'Indian Ocean', 'Artisanal'],
     url: `https://osamboussa.vercel.app/vendeur/${vendor.id}`,
     ...(vendor.tel ? { telephone: `+${String(vendor.tel).replace(/\D/g, '')}` } : {}),
     ...(vendor.from ? { priceRange: `dès ${vendor.from.toFixed(2)} €` } : {}),
