@@ -66,7 +66,7 @@ function AnnouncementBanner() {
   return (
     <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000, background: 'linear-gradient(90deg,#0A0A0A 0%,#1A1400 40%,#0A0A0A 100%)', borderBottom: '1px solid rgba(201,168,76,.3)', height: 34, overflow: 'hidden', animation: 'fadeIn .6s ease' }}>
       <div style={{ display: 'flex', alignItems: 'center', height: '100%', whiteSpace: 'nowrap', animation: 'marquee 22s linear infinite', width: 'max-content' }}>
-        {['🇫🇷 Fabrication artisanale à Marseille', '✅ Samboussas comoriens artisanaux', '🚚 Livraison partout en France', '❄️ Livrés non cuits — prêts à congeler', '📞 Samboussas cuits sur demande · 06 63 98 23 27', '🇰🇲 Le vrai goût des Comores'].map((text, index) => (
+        {['🌍 Spécialités africaines, asiatiques & océan Indien', '🤲 Produits artisanaux — faits à la main avec passion', '🚚 Livraison disponible partout en France', '📍 Trouvez un vendeur près de chez vous', '📞 Samboussas cuits sur demande · 06 63 98 23 27', '✨ Inscription vendeur 100% gratuite', '🌟 La gastronomie du monde à portée de main'].map((text, index) => (
           <span key={index} style={{ color: '#C9A84C', fontSize: 11, letterSpacing: 1.5, fontWeight: 500, padding: '0 28px' }}>
             {text}<span style={{ color: 'rgba(201,168,76,.3)', marginLeft: 28 }}>•</span>
           </span>

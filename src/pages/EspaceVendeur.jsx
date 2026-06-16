@@ -55,6 +55,7 @@ export default function EspaceVendeur() {
   const [newProductImgFiles, setNewProductImgFiles] = useState([]);
   const [newProductImgPreviews, setNewProductImgPreviews] = useState([]);
   const [newProductImgError, setNewProductImgError] = useState(null);
+  const [productInsertError, setProductInsertError] = useState(null);
   const [uploadingImg, setUploadingImg] = useState(false);
   const [newType, setNewType] = useState('');
   const [vendorStats, setVendorStats] = useState({ wa_clicks: 0, page_views: 0 });
@@ -216,63 +217,128 @@ export default function EspaceVendeur() {
   };
 
   const addProduct = async () => {
-    const parsed = parseFloat(newProduct.price);
-    if (!newProduct.name.trim() || isNaN(parsed) || parsed < 0) return;
+    // ── Validation ────────────────────────────────────────────────
+    const parsed = parseFloat(String(newProduct.price).replace(',', '.'));
+
+    console.log('[addProduct] ▶ start', {
+      name: newProduct.name,
+      priceRaw: newProduct.price,
+      priceParsed: parsed,
+      userId: user?.id,
+    });
+
+    if (!newProduct.name.trim()) {
+      console.warn('[addProduct] ✗ nom vide');
+      setProductInsertError('Le nom du produit est requis.');
+      return;
+    }
+    if (isNaN(parsed) || parsed < 0) {
+      console.warn('[addProduct] ✗ prix invalide', parsed);
+      setProductInsertError(`Prix invalide : "${newProduct.price}" → ${parsed}`);
+      return;
+    }
 
     setUploadingImg(true);
-    const allImgUrls = [];
+    setProductInsertError(null);
 
-    if (IS_REAL_SUPABASE && newProductImgFiles.length > 0) {
+    // ── Vérification session auth ──────────────────────────────────
+    const { data: sessionData } = await supabase.auth.getSession();
+    const session = sessionData?.session;
+    console.log('[addProduct] session:', session
+      ? `✓ uid=${session.user.id}, expires=${new Date(session.expires_at * 1000).toISOString()}`
+      : '✗ NULL — session expirée ou absente');
+
+    if (!session) {
+      setProductInsertError('Session expirée. Déconnectez-vous et reconnectez-vous.');
+      setUploadingImg(false);
+      return;
+    }
+
+    // ── Upload images ─────────────────────────────────────────────
+    const allImgUrls = [];
+    if (newProductImgFiles.length > 0) {
       for (let i = 0; i < newProductImgFiles.length; i++) {
         const file = newProductImgFiles[i];
         const ext = file.name.split('.').pop().toLowerCase();
         const path = `${user.id}/products/${Date.now()}_${i}.${ext}`;
+        console.log('[addProduct] upload image', path);
         const { error: upErr } = await supabase.storage
           .from(SUPABASE_STORAGE_BUCKET)
           .upload(path, file, { upsert: false });
-        if (!upErr) {
+        if (upErr) {
+          console.warn('[addProduct] upload error', upErr.message);
+        } else {
           const { data: urlData } = supabase.storage
             .from(SUPABASE_STORAGE_BUCKET)
             .getPublicUrl(path);
           if (urlData?.publicUrl) allImgUrls.push(urlData.publicUrl);
         }
       }
-    } else if (!IS_REAL_SUPABASE) {
-      allImgUrls.push(...newProductImgPreviews);
     }
 
     const imgUrl = allImgUrls[0] || null;
 
-    if (IS_REAL_SUPABASE) {
-      const { data, error } = await supabase.from('products').insert({
-        vendor_id: user.id,
-        name: newProduct.name.trim(),
-        price: parsed,
-        img: imgUrl,
-        images: allImgUrls,
-        active: true,
-      }).select().single();
-      if (!error && data) {
-        setProducts(prev => [...prev, {
-          id: data.id,
-          name: data.name,
-          price: Number(data.price),
-          img: data.img,
-          images: data.images || [],
-        }]);
-      }
-    } else {
-      setProducts(prev => [...prev, {
-        id: `p_${Date.now()}`,
-        name: newProduct.name,
-        price: parsed,
-        img: imgUrl,
-        images: allImgUrls,
-      }]);
+    // ── Payload ───────────────────────────────────────────────────
+    const payload = {
+      vendor_id: user.id,
+      name: newProduct.name.trim(),
+      price: parsed,
+      img: imgUrl,
+      active: true,
+    };
+    console.log('[addProduct] payload →', JSON.stringify(payload));
+
+    // ── Insert (sans images d'abord pour tester la colonne) ───────
+    const { data, error } = await supabase
+      .from('products')
+      .insert(payload)
+      .select('id, name, price, img, active')
+      .single();
+
+    console.log('[addProduct] result →', {
+      data,
+      error: error
+        ? { code: error.code, message: error.message, details: error.details, hint: error.hint }
+        : null,
+    });
+
+    if (error) {
+      const detail = [
+        error.message,
+        error.details  ? `Détails : ${error.details}` : '',
+        error.hint     ? `Conseil : ${error.hint}`     : '',
+        `Code : ${error.code || '?'}`,
+        `vendor_id utilisé : ${user.id}`,
+      ].filter(Boolean).join(' — ');
+      setProductInsertError(detail);
+      // Ne pas effacer le formulaire en cas d'erreur
+      setUploadingImg(false);
+      return;
     }
 
-    setNewProduct({ name: '', price: '' });
-    resetProductImgs();
+    if (data) {
+      // Si la colonne images existe, mettre à jour séparément (évite l'erreur si absente)
+      if (allImgUrls.length > 0) {
+        await supabase
+          .from('products')
+          .update({ img: imgUrl, images: allImgUrls })
+          .eq('id', data.id);
+      }
+
+      setProducts(prev => [...prev, {
+        id: data.id,
+        name: data.name,
+        price: Number(data.price),
+        img: data.img,
+        images: allImgUrls,
+      }]);
+
+      // Effacer le formulaire uniquement en cas de succès
+      setNewProduct({ name: '', price: '' });
+      resetProductImgs();
+      console.log('[addProduct] ✓ produit ajouté', data.id);
+    }
+
     setUploadingImg(false);
   };
 
@@ -637,6 +703,12 @@ export default function EspaceVendeur() {
                 onChange={addProductImgs}
               />
             </div>
+
+            {productInsertError && (
+              <div style={{ background: 'rgba(248,113,113,.08)', border: '1px solid rgba(248,113,113,.3)', borderRadius: 8, padding: '10px 14px', marginBottom: 12, color: '#F87171', fontSize: 12, lineHeight: 1.6, wordBreak: 'break-all' }}>
+                ⚠ {productInsertError}
+              </div>
+            )}
 
             <button
               className="btn-g"
