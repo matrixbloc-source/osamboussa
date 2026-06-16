@@ -23,6 +23,8 @@ function mapRow(row, products = []) {
     deliveryTime: row.delivery_time || '',
     deliveryZone: row.delivery_zone || '',
     address: row.address || '',
+    postalCode: row.postal_code || '',
+    district: row.district || '',
     photo: row.photo || null,
     logo: row.logo || null,
     from: Number(row.from_price) || 2.00,

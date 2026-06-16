@@ -42,6 +42,11 @@ export default function Vendeur() {
     } catch { /* user cancelled */ }
   };
 
+  const fmtLoc = (v) => {
+    const parts = [v?.city, v?.district].filter(Boolean).join(' ');
+    return v?.postalCode ? `${parts} (${v.postalCode})` : parts;
+  };
+
   if (loading) {
     return (
       <section style={{ padding: '16px', maxWidth: '1100px', margin: '80px auto' }}>
@@ -111,7 +116,7 @@ export default function Vendeur() {
             </span>
             <div style={{ color: '#C9A84C', marginTop: 4, fontWeight: 700, fontSize: 15 }}>dès {s.from.toFixed(2)} €</div>
             <div style={{ color: 'rgba(245,240,232,.7)', marginTop: 4, fontSize: 13, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-              <span>📍 {s.city}</span>
+              <span>📍 {fmtLoc(s)}</span>
               {s.rating > 0 && <span>⭐ {s.rating} ({s.reviews} avis)</span>}
               {s.delivery && <span>🚚 {s.deliveryTime}</span>}
               {s.sales > 0 && <span>🏆 {s.sales} ventes</span>}
@@ -193,7 +198,7 @@ export default function Vendeur() {
             }
             <div>
               <div style={{ fontWeight: 800, fontSize: 15 }}>{s.shop}</div>
-              <div style={{ color: '#9A9A8A', fontSize: 12 }}>📍 {s.city}</div>
+              <div style={{ color: '#9A9A8A', fontSize: 12 }}>📍 {fmtLoc(s)}</div>
             </div>
           </div>
 
@@ -206,6 +211,7 @@ export default function Vendeur() {
 
           <div style={{ display: 'grid', gap: 8, marginBottom: 20 }}>
             {[
+              (s.district || s.postalCode) && { label: '📍 Localisation', val: fmtLoc(s) },
               s.types?.length > 0 && { label: 'Spécialités', val: s.types.join(', ') },
               { label: 'Livraison', val: s.delivery ? `✅ ${s.deliveryTime || 'Disponible'}` : '❌ Non disponible' },
               s.deliveryZone && { label: 'Zone', val: s.deliveryZone },

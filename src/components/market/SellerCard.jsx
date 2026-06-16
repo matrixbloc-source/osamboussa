@@ -55,7 +55,11 @@ export default function SellerCard({ seller, featured = false }) {
             )}
           </div>
           <div style={{ color: '#9A9A8A', fontSize: 12, marginTop: 5 }}>
-            📍 {seller.city}{seller.types?.length > 0 ? ` · ${seller.types.slice(0, 2).join(', ')}` : ''}
+            {(() => {
+              const loc = [seller.city, seller.district].filter(Boolean).join(' ');
+              const locFull = seller.postalCode ? `${loc} (${seller.postalCode})` : loc;
+              return `📍 ${locFull}${seller.types?.length > 0 ? ' · ' + seller.types.slice(0, 2).join(', ') : ''}`;
+            })()}
           </div>
         </div>
 

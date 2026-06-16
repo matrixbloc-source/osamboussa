@@ -144,7 +144,8 @@ export default function DevenirVendeur() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    shop: '', city: '', tel: '', email: '', password: '',
+    shop: '', city: '', postal_code: '', district: '',
+    tel: '', email: '', password: '',
     desc: '', address: '', types: '', hours: '', instagram: '',
     delivery: false, pickup: false,
   });
@@ -171,6 +172,7 @@ export default function DevenirVendeur() {
     const e = {};
     if (!form.shop.trim()) e.shop = 'Requis';
     if (!form.city.trim()) e.city = 'Requise';
+    if (!form.postal_code.trim() || form.postal_code.trim().length < 5) e.postal_code = 'Code postal requis (5 chiffres)';
     if (!form.tel.trim()) e.tel = 'Requis';
     if (!form.email.trim() || !form.email.includes('@')) e.email = 'Email valide requis';
     if (!user) {
@@ -261,6 +263,8 @@ export default function DevenirVendeur() {
         id: uid,
         shop: form.shop.trim(),
         city: form.city.trim(),
+        postal_code: form.postal_code.trim(),
+        district: form.district.trim(),
         email: form.email.trim() || user?.email || '',
         phone: form.tel.trim(),
         description: form.desc.trim(),
@@ -369,6 +373,14 @@ export default function DevenirVendeur() {
 
             <Field label="Ville" required error={errors.city}>
               <input value={form.city} onChange={set('city')} placeholder="Ex: Marseille" style={{ ...inp, borderColor: errors.city ? '#FF6B6B' : 'rgba(201,168,76,.2)' }} />
+            </Field>
+
+            <Field label="Code postal" required error={errors.postal_code}>
+              <input value={form.postal_code} onChange={set('postal_code')} placeholder="Ex: 75019" maxLength={5} inputMode="numeric" style={{ ...inp, borderColor: errors.postal_code ? '#FF6B6B' : 'rgba(201,168,76,.2)' }} />
+            </Field>
+
+            <Field label="Arrondissement / Quartier" error={errors.district}>
+              <input value={form.district} onChange={set('district')} placeholder="Ex: 19e arrondissement" style={inp} />
             </Field>
 
             <Field label="Adresse" full>

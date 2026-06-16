@@ -156,6 +156,8 @@ export default function EspaceVendeur() {
         const { error: updateErr } = await supabase.from('vendors').update({
           shop: form.shop,
           city: form.city,
+          postal_code: form.postalCode || '',
+          district: form.district || '',
           phone: form.tel,
           hours: form.hours,
           delivery: Boolean(form.delivery),
@@ -510,6 +512,8 @@ export default function EspaceVendeur() {
               {[
                 { label: 'Nom de la boutique', field: 'shop' },
                 { label: 'Ville', field: 'city' },
+                { label: 'Code postal', field: 'postalCode', placeholder: '75019' },
+                { label: 'Arrondissement / Quartier', field: 'district', placeholder: '19e arrondissement' },
                 { label: 'Téléphone / WhatsApp', field: 'tel' },
                 { label: 'Horaires', field: 'hours', placeholder: 'Lun–Sam 10:00–20:00' },
                 { label: 'Instagram (sans @)', field: 'instagram', placeholder: 'ma_boutique' },
