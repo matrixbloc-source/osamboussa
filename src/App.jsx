@@ -29,8 +29,9 @@ import { VendorProvider } from "./context/VendorContext.jsx";
 const CSS = `
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
   *{box-sizing:border-box;margin:0;padding:0}
-  html{scroll-behavior:smooth}
-  body{background:#0A0A0A;color:#F5F0E8;font-family:'Inter',sans-serif;overflow-x:hidden}
+  html{scroll-behavior:smooth;overflow-x:hidden;width:100%}
+  body{background:#0A0A0A;color:#F5F0E8;font-family:'Inter',sans-serif;overflow-x:hidden;width:100%}
+  #root{overflow-x:hidden;width:100%}
   ::-webkit-scrollbar{width:5px}
   ::-webkit-scrollbar-track{background:#0A0A0A}
   ::-webkit-scrollbar-thumb{background:#8A6E2F;border-radius:3px}

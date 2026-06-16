@@ -100,12 +100,13 @@ function HomeHero({ onFind }) {
           display: 'inline-flex', alignItems: 'center', gap: 8,
           background: 'rgba(201,168,76,.07)',
           border: '1px solid rgba(201,168,76,.2)',
-          borderRadius: 100, padding: '7px 18px',
+          borderRadius: 100, padding: '7px 16px',
           marginBottom: 'clamp(22px,3.5vw,36px)',
+          maxWidth: '100%',
         }}>
-          <span style={{ width:7, height:7, borderRadius:'50%', background:'#C9A84C', animation:'pulse 2s ease-in-out infinite', display:'inline-block', flexShrink:0 }} />
-          <span style={{ fontSize:11, letterSpacing:'2.5px', textTransform:'uppercase', color:'#C9A84C', fontWeight:500, whiteSpace:'nowrap' }}>
-            Marketplace culinaire · France entière
+          <span style={{ width:6, height:6, borderRadius:'50%', background:'#C9A84C', animation:'pulse 2s ease-in-out infinite', display:'inline-block', flexShrink:0 }} />
+          <span style={{ fontSize:11, letterSpacing:'1.5px', textTransform:'uppercase', color:'#C9A84C', fontWeight:500 }}>
+            Cuisine du monde · France
           </span>
         </div>
 
@@ -160,7 +161,9 @@ function HomeHero({ onFind }) {
 
         {/* Stats */}
         <div style={{
-          display: 'flex', gap: 'clamp(18px,4vw,48px)', flexWrap: 'wrap',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(2,1fr)',
+          gap: 'clamp(14px,3vw,28px)',
           paddingTop: 'clamp(22px,3vw,32px)',
           borderTop: '1px solid rgba(201,168,76,.1)',
         }}>
@@ -170,7 +173,7 @@ function HomeHero({ onFind }) {
             { value:'0 €',  label:'Inscription vendeur' },
             { value:'⚡',   label:'Contact WhatsApp direct' },
           ].map((s, i) => (
-            <div key={i} style={{ minWidth:70 }}>
+            <div key={i}>
               <div style={{ fontSize:'clamp(18px,2.8vw,28px)', fontWeight:700, color:'#C9A84C', fontFamily:"'Playfair Display',serif" }}>{s.value}</div>
               <div style={{ fontSize:10, color:'#5A5A5A', letterSpacing:'1.5px', textTransform:'uppercase', marginTop:3 }}>{s.label}</div>
             </div>
@@ -185,7 +188,7 @@ function HomeHero({ onFind }) {
 
 function WorldRegions() {
   return (
-    <div style={{ background:'#080808', padding:'clamp(48px,8vw,80px) 24px', borderBottom:'1px solid rgba(201,168,76,.07)' }}>
+    <div style={{ background:'#080808', padding:'clamp(48px,8vw,80px) 24px', borderBottom:'1px solid rgba(201,168,76,.07)', overflowX:'hidden' }}>
       <div style={{ maxWidth:1200, margin:'0 auto' }}>
         <div style={{ textAlign:'center', marginBottom:'clamp(32px,5vw,52px)' }}>
           <p className="lbl" style={{ marginBottom:14 }}>Explorez le monde</p>
@@ -240,7 +243,7 @@ function WorldRegions() {
 
 function WhySection() {
   return (
-    <div style={{ background:'#0A0A0A', padding:'clamp(48px,8vw,80px) 24px', borderBottom:'1px solid rgba(201,168,76,.07)' }}>
+    <div style={{ background:'#0A0A0A', padding:'clamp(48px,8vw,80px) 24px', borderBottom:'1px solid rgba(201,168,76,.07)', overflowX:'hidden' }}>
       <div style={{ maxWidth:1200, margin:'0 auto' }}>
         <div style={{ textAlign:'center', marginBottom:'clamp(32px,5vw,52px)' }}>
           <p className="lbl" style={{ marginBottom:14 }}>Pourquoi nous choisir</p>
@@ -306,7 +309,7 @@ function CitiesStrip({ cities, activeCity, onCity, onFind }) {
   };
 
   return (
-    <div style={{ background:'#0C0C0C', padding:'clamp(36px,6vw,60px) 24px', borderBottom:'1px solid rgba(201,168,76,.07)' }}>
+    <div style={{ background:'#0C0C0C', padding:'clamp(36px,6vw,60px) 24px', borderBottom:'1px solid rgba(201,168,76,.07)', overflowX:'hidden' }}>
       <div style={{ maxWidth:1200, margin:'0 auto' }}>
         <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between', marginBottom:24, flexWrap:'wrap', gap:12 }}>
           <div>
