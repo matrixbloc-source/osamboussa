@@ -59,8 +59,30 @@ const CSS = `
   select option{background:#1A1A1A;color:#F5F0E8}
   .nav-links-desktop{display:flex;gap:20px;align-items:center}
   .sm{display:none}
-  @media(max-width:768px){.nav-links-desktop{display:none!important}.sm{display:flex!important}}
-  @media(max-width:420px){nav{padding:0 12px}.btn-g{padding:8px 10px;font-size:12px}.navlink{font-size:11px}input,textarea{font-size:14px}.pf{font-size:inherit}}
+
+  @media(max-width:768px){
+    .nav-links-desktop{display:none!important}
+    .sm{display:flex!important}
+
+    /* Footer — empilage vertical complet */
+    .footer-grid{grid-template-columns:1fr!important;gap:20px!important}
+    .footer-bottom{flex-direction:column!important;align-items:flex-start!important;gap:8px!important}
+
+    /* CTAs — pleine largeur, empilés */
+    .ctas-row{flex-direction:column!important;align-items:stretch!important;width:100%!important;box-sizing:border-box!important}
+    .ctas-row>.btn-g,.ctas-row>.btn-o,.ctas-row>a,.ctas-row>button{width:100%!important;text-align:center!important;box-sizing:border-box!important;display:block!important;min-width:0!important}
+
+    /* Sections — aucun débordement */
+    section,footer,main,div[style]{max-width:100vw}
+  }
+
+  @media(max-width:480px){
+    nav{padding:0 12px}
+    .btn-g{padding:10px 14px!important;font-size:12px!important}
+    .btn-o{padding:10px 14px!important;font-size:12px!important}
+    .navlink{font-size:11px}
+    input,textarea,select{font-size:14px}
+  }
 `;
 
 function AnnouncementBanner() {

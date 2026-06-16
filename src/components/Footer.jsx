@@ -64,9 +64,9 @@ function FooterLink({ to, children }) {
 
 export default function Footer() {
   return (
-    <footer style={{ background: '#111', borderTop: '1px solid rgba(201,168,76,.08)', padding: '52px 24px 24px' }}>
-      <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 36, marginBottom: 44 }}>
+    <footer style={{ background: '#111', borderTop: '1px solid rgba(201,168,76,.08)', padding: '52px 24px 24px', overflowX: 'hidden', width: '100%', boxSizing: 'border-box' }}>
+      <div style={{ maxWidth: 1100, margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
+        <div className="footer-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 36, marginBottom: 44 }}>
 
           {/* Brand */}
           <div>
@@ -119,7 +119,7 @@ export default function Footer() {
         </div>
 
         <div className="divg" />
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, marginTop: 20 }}>
+        <div className="footer-bottom" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, marginTop: 20 }}>
           <p style={{ color: '#6B6B6B', fontSize: 11 }}>
             © 2026 O'SAMBOUSSA Marketplace — Tous droits réservés.
           </p>

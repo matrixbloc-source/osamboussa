@@ -142,7 +142,7 @@ function HomeHero({ onFind }) {
         </p>
 
         {/* CTA */}
-        <div style={{ display:'flex', gap:12, flexWrap:'wrap', marginBottom:'clamp(36px,6vw,60px)' }}>
+        <div className="ctas-row" style={{ display:'flex', gap:12, flexWrap:'wrap', marginBottom:'clamp(36px,6vw,60px)' }}>
           <button
             className="btn-g"
             onClick={onFind}
@@ -362,7 +362,7 @@ function VendorCTA() {
           Inscription 100% gratuite · Compte Fondateur à vie · Visible sur Google par ville et par spécialité.
         </p>
 
-        <div style={{ display:'flex', gap:12, justifyContent:'center', flexWrap:'wrap', marginBottom:28 }}>
+        <div className="ctas-row" style={{ display:'flex', gap:12, justifyContent:'center', flexWrap:'wrap', marginBottom:28 }}>
           <Link
             to="/devenir-vendeur"
             className="btn-g"
